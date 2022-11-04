@@ -1,0 +1,12 @@
+{
+  "name": "com.iup.matrices",
+  "version": "1.0.0",
+  "displayName": "Matrices",
+  "description": "Классы-оболочки для комфортной работы с матрицами.",
+  "author": {
+    "name": "PostEnot",
+    "email": "ve.vyshegorodsky.cold@gmail.com",
+    "url": "https://t.me/ProcyonNihil"
+  },
+  "type": "library"
+}
