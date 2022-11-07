@@ -8,6 +8,9 @@ namespace IUP_Toolkits.Matrices
     /// <typeparam name="T">Тип данных элементов матрицы.</typeparam>
     public interface IReadonlyMatrixIndexer<T>
     {
+        public int Width { get; }
+        public int Height { get; }
+
         /// <summary>
         /// Индексатор для readonly-доступа к элементам матрицы.
         /// </summary>
