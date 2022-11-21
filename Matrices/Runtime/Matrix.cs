@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace IUP_Toolkits.Matrices
+namespace IUP.Toolkits.Matrices
 {
     /// <summary>
     /// Оболочка для матриц.
@@ -79,10 +79,7 @@ namespace IUP_Toolkits.Matrices
         /// </summary>
         /// <param name="widthOffset"></param>
         /// <param name="heightOffset"></param>
-        public void Resize(int widthOffset, int heightOffset)
-        {
-
-        }
+        public void Resize(int widthOffset, int heightOffset) { }
 
         /// <summary>
         /// Возвращает ссылку на двухмерный массив матрицы.
@@ -107,6 +104,27 @@ namespace IUP_Toolkits.Matrices
                 array[i] = _matrix[y, x];
             }
             return array;
+        }
+
+        /// <summary>
+        /// Проверяет, находятся ли координата в области определения матрицы.
+        /// </summary>
+        /// <param name="coordinate">Проверяемая координата.</param>
+        /// <returns>Возвращает true, если координата находится в области определния матрицы; иначе false.</returns>
+        public bool IsCoordinateInDefinitionDomain(Vector2Int coordinate)
+        {
+            return coordinate.x >= 0 && coordinate.x < Width && coordinate.y >= 0 && coordinate.y < Height;
+        }
+
+        /// <summary>
+        /// Проверяет, находятся ли координата в области определения матрицы.
+        /// </summary>
+        /// <param name="x">X-компонент проверяемой координаты.</param>
+        /// <param name="y">Y-компонент проверяемой координаты.</param>
+        /// <returns>Возвращает true, если координата находится в области определния матрицы; иначе false.</returns>
+        public bool IsCoordinateInDefinitionDomain(int x, int y)
+        {
+            return x >= 0 && x < Width && y >= 0 && y < Height;
         }
 
         public IEnumerator<T> GetEnumerator()

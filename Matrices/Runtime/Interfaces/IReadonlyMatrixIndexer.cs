@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace IUP_Toolkits.Matrices
+namespace IUP.Toolkits.Matrices
 {
     /// <summary>
     /// Readonly-интерфейс матричного индексатора.

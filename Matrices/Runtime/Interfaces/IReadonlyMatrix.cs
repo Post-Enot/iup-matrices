@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace IUP_Toolkits.Matrices
+namespace IUP.Toolkits.Matrices
 {
     /// <summary>
     /// Readonly-интерфейс матрицы.
