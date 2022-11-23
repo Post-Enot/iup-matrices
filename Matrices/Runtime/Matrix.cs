@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -77,17 +78,161 @@ namespace IUP.Toolkits.Matrices
         /// <summary>
         /// Изменяет размер матрицы с учётом направления смещения.
         /// </summary>
-        /// <param name="widthOffset"></param>
-        /// <param name="heightOffset"></param>
-        public void Resize(int widthOffset, int heightOffset) { }
+        /// <param name="widthOffset">Изменение ширины: если значение положительное, в матрицу добавляются 
+        /// столбцы в соответствии с правилом изменения; если отрицательное - столбцы удаляются.</param>
+        /// <param name="heightOffset">Изменение высоты: если значение положительное, в матрицу добавляются 
+        /// строки в соответствии с правилом изменения; если отрицательное - строки удаляются.</param>
+        /// <param name="widthResizeRule">Правило изменения ширины.</param>
+        /// <param name="heightResizeRule">Правило изменения высоты.</param>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public void Resize(
+            int widthOffset = 0,
+            int heightOffset = 0,
+            WidthResizeRule widthResizeRule = WidthResizeRule.Left,
+            HeightResizeRule heightResizeRule = HeightResizeRule.Up)
+        {
+            int updatedWidth = Width + widthOffset;
+            if (updatedWidth < 0)
+            {
+                updatedWidth = 0;
+            }
+            int updatedHeight = Height + heightOffset;
+            if (updatedHeight < 0)
+            {
+                updatedHeight = 0;
+            }
+
+            const int startOffsetCode = 0;
+            const int endOffsetCode = 1;
+            const int centerStartOffsetCode = 2;
+            const int centerEndOffsetCode = 3;
+
+            static void CalculateMatrixComponentParams(
+                int oldSize,
+                int updatedSize,
+                int componentOffset,
+                int resizeRuleCode,
+                out int componentIterCount,
+                out int oldMatrixComponentOffset,
+                out int resizedMatrixComponentOffset)
+            {
+                componentIterCount = 0;
+                oldMatrixComponentOffset = 0;
+                resizedMatrixComponentOffset = 0;
+                if (updatedSize > 0 && updatedSize != oldSize)
+                {
+                    componentIterCount = componentOffset >= 0 ? oldSize : updatedSize;
+                    switch (resizeRuleCode)
+                    {
+                        case startOffsetCode:
+                            if (componentOffset > 0)
+                            {
+                                resizedMatrixComponentOffset = componentOffset;
+                            }
+                            else
+                            {
+                                oldMatrixComponentOffset = -componentOffset;
+                            }
+                            return;
+
+                        case endOffsetCode:
+                            return;
+
+                        case centerStartOffsetCode:
+                            if (componentOffset > 0)
+                            {
+                                resizedMatrixComponentOffset = componentOffset / 2;
+                                if (componentOffset % 2 != 0)
+                                {
+                                    resizedMatrixComponentOffset += 1;
+                                }
+                            }
+                            else
+                            {
+                                oldMatrixComponentOffset = -componentOffset / 2;
+                                if (componentOffset % 2 != 0)
+                                {
+                                    oldMatrixComponentOffset += 1;
+                                }
+                            }
+                            return;
+
+                        case centerEndOffsetCode:
+                            if (componentOffset > 0)
+                            {
+                                resizedMatrixComponentOffset = componentOffset / 2;
+                            }
+                            else
+                            {
+                                oldMatrixComponentOffset = -componentOffset / 2;
+                            }
+                            return;
+
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(resizeRuleCode));
+                    }
+                }
+            }
+
+            int widthResizeRuleCode = widthResizeRule switch
+            {
+                WidthResizeRule.Left => startOffsetCode,
+                WidthResizeRule.Right => endOffsetCode,
+                WidthResizeRule.CenterLeft => centerStartOffsetCode,
+                WidthResizeRule.CenterRight => centerEndOffsetCode,
+                _ => throw new ArgumentOutOfRangeException(nameof(widthResizeRule))
+            };
+            CalculateMatrixComponentParams(
+                Width,
+                updatedWidth,
+                widthOffset,
+                widthResizeRuleCode,
+                out int xIterCount,
+                out int oldMatrixX_Offset,
+                out int resizedMatrixX_Offset);
+            
+            int heightResizeRuleCode = heightResizeRule switch
+            {
+                HeightResizeRule.Up => startOffsetCode,
+                HeightResizeRule.Down => endOffsetCode,
+                HeightResizeRule.CenterUp => centerStartOffsetCode,
+                HeightResizeRule.CenterDown => centerEndOffsetCode,
+                _ => throw new ArgumentOutOfRangeException(nameof(widthResizeRule))
+            };
+            CalculateMatrixComponentParams(Height,
+                updatedHeight,
+                heightOffset,
+                heightResizeRuleCode,
+                out int yIterCount,
+                out int oldMatrixY_Offset,
+                out int resizedMatrixY_Offset);
+
+            T[,] resizedMatrix = new T[updatedWidth, updatedHeight];
+            for (int y = 0; y < yIterCount; y += 1)
+            {
+                for (int x = 0; x < xIterCount; x += 1)
+                {
+                    resizedMatrix[y + resizedMatrixY_Offset, x + resizedMatrixX_Offset] =
+                        _matrix[y + oldMatrixY_Offset, x + oldMatrixX_Offset];
+                }
+            }
+            _matrix = resizedMatrix;
+        }
 
         /// <summary>
-        /// Возвращает ссылку на двухмерный массив матрицы.
+        /// Инициализирует все значения матрицы с помощью переданной функции.
         /// </summary>
-        /// <returns>Ссылка на двухмерный массив матрицы.</returns>
-        public T[,] GetDoubleArray()
+        /// <param name="initFuncion">Функция инициализации. Принимает два аргумента: x (int) и y (int), 
+        /// представляющие индексы инициализируемого объекта в матрице.</param>
+        public void InitAllElements(Func<int, int, T> initFuncion)
         {
-            return _matrix;
+            for (int y = 0; y < _matrix.GetLength(0); y += 1)
+            {
+                for (int x = 0; x < _matrix.GetLength(1); x += 1)
+                {
+                    _matrix[y, x] = initFuncion(x, y);
+                }
+            }
         }
 
         /// <summary>
@@ -129,12 +274,12 @@ namespace IUP.Toolkits.Matrices
 
         public IEnumerator<T> GetEnumerator()
         {
-            throw new System.NotImplementedException();
+            return (IEnumerator<T>)_matrix.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            throw new System.NotImplementedException();
+            return _matrix.GetEnumerator();
         }
     }
 }
