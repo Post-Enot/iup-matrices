@@ -5,6 +5,8 @@ using UnityEngine;
 
 namespace IUP.Toolkits.Matrices
 {
+    public delegate void ActionOnMatrixElement<T>(ref T element, int x, int y);
+
     /// <summary>
     /// Оболочка для матриц.
     /// </summary>
@@ -226,11 +228,28 @@ namespace IUP.Toolkits.Matrices
         /// представляющие индексы инициализируемого объекта в матрице.</param>
         public void InitAllElements(Func<int, int, T> initFuncion)
         {
-            for (int y = 0; y < _matrix.GetLength(0); y += 1)
+            for (int y = 0; y < Height; y += 1)
             {
-                for (int x = 0; x < _matrix.GetLength(1); x += 1)
+                for (int x = 0; x < Width; x += 1)
                 {
                     _matrix[y, x] = initFuncion(x, y);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Совершает операцию с каждым элементом матрицы.
+        /// </summary>
+        /// <param name="actionOnMatrixElement">Делегат операции, совершаемой над каждым элементом матрицы. 
+        /// Принимает три аргумента: сам элемент матрицы (ref element), а также две координаты элемента 
+        /// (x, y).</param>
+        public void ForEachElements(ActionOnMatrixElement<T> actionOnMatrixElement)
+        {
+            for (int y = 0; y < Height; y += 1)
+            {
+                for (int x = 0; x < Width; x += 1)
+                {
+                    actionOnMatrixElement(ref _matrix[y, x], x, y);
                 }
             }
         }
