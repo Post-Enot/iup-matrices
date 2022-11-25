@@ -118,7 +118,7 @@ namespace IUP.Toolkits.Matrices
                 out int oldMatrixComponentOffset,
                 out int resizedMatrixComponentOffset)
             {
-                componentIterCount = 0;
+                componentIterCount = updatedSize;
                 oldMatrixComponentOffset = 0;
                 resizedMatrixComponentOffset = 0;
                 if (updatedSize > 0 && updatedSize != oldSize)
@@ -144,7 +144,7 @@ namespace IUP.Toolkits.Matrices
                             if (componentOffset > 0)
                             {
                                 resizedMatrixComponentOffset = componentOffset / 2;
-                                if (componentOffset % 2 != 0)
+                                if (componentOffset.IsOdd())
                                 {
                                     resizedMatrixComponentOffset += 1;
                                 }
@@ -152,7 +152,7 @@ namespace IUP.Toolkits.Matrices
                             else
                             {
                                 oldMatrixComponentOffset = -componentOffset / 2;
-                                if (componentOffset % 2 != 0)
+                                if (componentOffset.IsOdd())
                                 {
                                     oldMatrixComponentOffset += 1;
                                 }
@@ -192,16 +192,17 @@ namespace IUP.Toolkits.Matrices
                 out int xIterCount,
                 out int oldMatrixX_Offset,
                 out int resizedMatrixX_Offset);
-            
+
             int heightResizeRuleCode = heightResizeRule switch
             {
-                HeightResizeRule.Up => startOffsetCode,
-                HeightResizeRule.Down => endOffsetCode,
-                HeightResizeRule.CenterUp => centerStartOffsetCode,
-                HeightResizeRule.CenterDown => centerEndOffsetCode,
+                HeightResizeRule.Down => startOffsetCode,
+                HeightResizeRule.Up => endOffsetCode,
+                HeightResizeRule.CenterDown => centerStartOffsetCode,
+                HeightResizeRule.CenterUp => centerEndOffsetCode,
                 _ => throw new ArgumentOutOfRangeException(nameof(widthResizeRule))
             };
-            CalculateMatrixComponentParams(Height,
+            CalculateMatrixComponentParams(
+                Height,
                 updatedHeight,
                 heightOffset,
                 heightResizeRuleCode,
@@ -209,7 +210,7 @@ namespace IUP.Toolkits.Matrices
                 out int oldMatrixY_Offset,
                 out int resizedMatrixY_Offset);
 
-            T[,] resizedMatrix = new T[updatedWidth, updatedHeight];
+            T[,] resizedMatrix = new T[updatedHeight, updatedWidth];
             for (int y = 0; y < yIterCount; y += 1)
             {
                 for (int x = 0; x < xIterCount; x += 1)

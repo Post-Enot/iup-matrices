@@ -1,3 +1,16 @@
 {
-	"name": "iup.matrices.runtime"
+    "name": "iup.matrices.runtime",
+    "rootNamespace": "",
+    "references": [
+        "GUID:23710380ea4a23940b8551abaac72858"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
