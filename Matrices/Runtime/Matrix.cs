@@ -224,7 +224,7 @@ namespace IUP.Toolkits.Matrices
         /// Поворачивает матрицу.
         /// </summary>
         /// <param name="matrixRotation">Тип вращения матрицы.</param>
-        /// иначе против часовой.</param>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         public void Rotate(MatrixRotation matrixRotation)
         {
             int width;
@@ -273,6 +273,26 @@ namespace IUP.Toolkits.Matrices
                 }
             }
             _matrix = rotatedMatrix;
+        }
+
+        /// <summary>
+        /// Отражает матрицу.
+        /// </summary>
+        /// <param name="matrixMirror">Тип отражения матрицы.</param>
+        public void Mirror(MatrixMirror matrixMirror)
+        {
+            if (matrixMirror is MatrixMirror.Horizontal)
+            {
+                MirrorHorizontally();
+            }
+            else if (matrixMirror is MatrixMirror.Vertical)
+            {
+                MirrorVertically();
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException(nameof(matrixMirror));
+            }
         }
 
         /// <summary>
@@ -384,6 +404,32 @@ namespace IUP.Toolkits.Matrices
         IEnumerator IEnumerable.GetEnumerator()
         {
             return _matrix.GetEnumerator();
+        }
+
+        private void MirrorVertically()
+        {
+            int heightHalf = Height / 2;
+            for (int y = 0; y < heightHalf; y += 1)
+            {
+                for (int x = 0; x < Width; x += 1)
+                {
+                    int swappedY = Height - 1 - y;
+                    (_matrix[y, x], _matrix[swappedY, x]) = (_matrix[swappedY, x], _matrix[y, x]);
+                }
+            }
+        }
+
+        private void MirrorHorizontally()
+        {
+            int widthHalf = Width / 2;
+            for (int y = 0; y < Height; y += 1)
+            {
+                for (int x = 0; x < widthHalf; x += 1)
+                {
+                    int swappedX = Width - 1 - x;
+                    (_matrix[y, x], _matrix[y, swappedX]) = (_matrix[y, swappedX], _matrix[y, x]);
+                }
+            }
         }
     }
 }
