@@ -221,6 +221,61 @@ namespace IUP.Toolkits.Matrices
         }
 
         /// <summary>
+        /// Поворачивает матрицу.
+        /// </summary>
+        /// <param name="matrixRotation">Тип вращения матрицы.</param>
+        /// иначе против часовой.</param>
+        public void Rotate(MatrixRotation matrixRotation)
+        {
+            int width;
+            int height;
+            if (matrixRotation is MatrixRotation.Clockwise90_Degrees
+                or MatrixRotation.Clockwise270_Degrees
+                or MatrixRotation.Conterclockwise90_Degrees
+                or MatrixRotation.Conterclockwise270_Degrees)
+            {
+                width = Height;
+                height = Width;
+            }
+            else
+            {
+                width = Width;
+                height = Height;
+            }
+            var rotatedMatrix = new T[height, width];
+
+            Func<int, int, int> calculateRotatedX = matrixRotation switch
+            {
+                MatrixRotation.Clockwise90_Degrees or
+                    MatrixRotation.Conterclockwise270_Degrees => (int x, int y) => y,
+                MatrixRotation.Conterclockwise90_Degrees or
+                    MatrixRotation.Clockwise270_Degrees => (int x, int y) => Height - 1 - y,
+                MatrixRotation._180_Degrees => (int x, int y) => Width - 1 - x,
+                _ => throw new ArgumentOutOfRangeException(nameof(matrixRotation))
+            };
+            Func<int, int, int> calculateRotatedY = matrixRotation switch
+            {
+                MatrixRotation.Clockwise90_Degrees or
+                    MatrixRotation.Conterclockwise270_Degrees => (int x, int y) => Width - 1 - x,
+                MatrixRotation.Conterclockwise90_Degrees or
+                    MatrixRotation.Clockwise270_Degrees => (int x, int y) => x,
+                MatrixRotation._180_Degrees => (int x, int y) => Height - 1 - y,
+                _ => throw new ArgumentOutOfRangeException(nameof(matrixRotation))
+            };
+
+            for (int y = 0; y < Height; y += 1)
+            {
+                for (int x = 0; x < Width; x += 1)
+                {
+                    int rotatedX = calculateRotatedX(x, y);
+                    int rotatedY = calculateRotatedY(x, y);
+                    rotatedMatrix[rotatedY, rotatedX] = _matrix[y, x];
+                }
+            }
+            _matrix = rotatedMatrix;
+        }
+
+        /// <summary>
         /// Инициализирует все значения матрицы с помощью переданной функции.
         /// </summary>
         /// <param name="initFuncion">Функция инициализации. Принимает два аргумента: x (int) и y (int), 
@@ -252,34 +307,34 @@ namespace IUP.Toolkits.Matrices
         }
 
         /// <summary>
-        /// Совершает операцию с каждым элементом матрицы.
+        /// Совершает операцию над каждым элементом матрицы.
         /// </summary>
-        /// <param name="actionOnMatrixElement">Делегат операции, совершаемой над каждым элементом матрицы. 
+        /// <param name="actionOnElement">Делегат операции, совершаемой над каждым элементом матрицы. 
         /// Принимает один аргумент: элемент матрицы (ref element).</param>
-        public void ForEachElements(MapAction<T> actionOnMatrixElement)
+        public void ForEachElements(MapAction<T> actionOnElement)
         {
             for (int y = 0; y < Height; y += 1)
             {
                 for (int x = 0; x < Width; x += 1)
                 {
-                    actionOnMatrixElement(ref _matrix[y, x]);
+                    actionOnElement(ref _matrix[y, x]);
                 }
             }
         }
 
         /// <summary>
-        /// Совершает операцию с каждым элементом матрицы.
+        /// Совершает операцию над каждым элементом матрицы.
         /// </summary>
-        /// <param name="actionOnMatrixElement">Делегат операции, совершаемой над каждым элементом матрицы. 
+        /// <param name="actionOnElement">Делегат операции, совершаемой над каждым элементом матрицы. 
         /// Принимает три аргумента: сам элемент матрицы (ref element), а также две координаты элемента 
         /// (x, y).</param>
-        public void ForEachElements(MapAction<T, int, int> actionOnMatrixElement)
+        public void ForEachElements(MapAction<T, int, int> actionOnElement)
         {
             for (int y = 0; y < Height; y += 1)
             {
                 for (int x = 0; x < Width; x += 1)
                 {
-                    actionOnMatrixElement(ref _matrix[y, x], x, y);
+                    actionOnElement(ref _matrix[y, x], x, y);
                 }
             }
         }
