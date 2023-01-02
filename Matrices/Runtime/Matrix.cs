@@ -9,10 +9,10 @@ namespace IUP.Toolkits.Matrices
     /// Оболочка для матриц.
     /// </summary>
     /// <typeparam name="T">Тип данных элементов матрицы.</typeparam>
-    public class Matrix<T> : IReadonlyMatrix<T>
+    public class Matrix<T> : IReadOnlyMatrix<T>
     {
         /// <summary>
-        /// Создаёт пустую матрицу размерностью [0, 0].
+        /// Инициализирует пустую матрицу размерностью [0, 0].
         /// </summary>
         public Matrix()
         {
@@ -281,17 +281,18 @@ namespace IUP.Toolkits.Matrices
         /// <param name="matrixMirror">Тип отражения матрицы.</param>
         public void Mirror(MatrixMirror matrixMirror)
         {
-            if (matrixMirror is MatrixMirror.Horizontal)
+            switch (matrixMirror)
             {
-                MirrorHorizontally();
-            }
-            else if (matrixMirror is MatrixMirror.Vertical)
-            {
-                MirrorVertically();
-            }
-            else
-            {
-                throw new ArgumentOutOfRangeException(nameof(matrixMirror));
+                case MatrixMirror.Horizontal:
+                    MirrorHorizontally();
+                    break;
+
+                case MatrixMirror.Vertical:
+                    MirrorVertically();
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(matrixMirror));
             }
         }
 

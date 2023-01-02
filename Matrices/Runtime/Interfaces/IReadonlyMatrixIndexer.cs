@@ -6,7 +6,7 @@ namespace IUP.Toolkits.Matrices
     /// Readonly-интерфейс матричного индексатора.
     /// </summary>
     /// <typeparam name="T">Тип данных элементов матрицы.</typeparam>
-    public interface IReadonlyMatrixIndexer<T>
+    public interface IReadOnlyMatrixIndexer<T>
     {
         public int Width { get; }
         public int Height { get; }
