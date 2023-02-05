@@ -1,7 +1,7 @@
 {
   "name": "com.iup.matrices",
   "version": "1.0.0",
-  "displayName": "Matrices",
+  "displayName": "IUP Matrices",
   "description": "Классы-оболочки для комфортной работы с матрицами.",
   "author": {
     "name": "PostEnot",
